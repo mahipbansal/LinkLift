@@ -35,6 +35,7 @@ export async function POST(req: NextRequest) {
     const buffer = Buffer.from(await response.arrayBuffer());
     const pdfData = await pdf(buffer);
     const resumeText = pdfData.text.slice(0, 10000); // Further increased to 10k to catch everything
+    console.log(`[API] PDF Parsed. Length: ${resumeText.length}, Preview: ${resumeText.slice(0, 100)}...`);
 
     const safetySettings = [
       { category: HarmCategory.HARM_CATEGORY_HARASSMENT, threshold: HarmBlockThreshold.BLOCK_NONE },
@@ -100,12 +101,9 @@ export async function POST(req: NextRequest) {
     // 2. Model Loop
     // 🟢 DIVERSE MODELS & API VERSIONS TO BEAT 404/429
     const configsToTry = [
-      { name: "gemini-2.0-flash", version: "v1beta", useSchema: true, jsonMode: true },
       { name: "gemini-1.5-flash", version: "v1beta", useSchema: true, jsonMode: true },
-      { name: "gemini-1.5-flash", version: "v1", useSchema: false, jsonMode: true },
       { name: "gemini-1.5-pro", version: "v1beta", useSchema: true, jsonMode: true },
-      { name: "gemini-1.5-pro", version: "v1", useSchema: false, jsonMode: true },
-      { name: "gemini-pro", version: "v1", useSchema: false, jsonMode: false }
+      { name: "gemini-1.0-pro", version: "v1", useSchema: false, jsonMode: false }
     ];
 
     // 🟢 FEW-SHOT PROMPT CONSTRUCTION

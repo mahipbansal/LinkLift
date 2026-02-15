@@ -51,12 +51,15 @@ export default function PortfolioPreview() {
         .order("created_at", { ascending: false })
         .limit(1);
 
-      if (resumes && resumes.length > 0) {
+        if (resumes && resumes.length > 0) {
+        console.log("✅ Portfolio Data Found:", resumes[0]);
         setData(resumes[0].parsed_json);
         setFileUrl(resumes[0].file_url);
         setResumeId(resumes[0].id);
         setUserSlug(resumes[0].slug); // 🟢 Store slug locally
         if (resumes[0].template_id) setCurrentTemplateId(resumes[0].template_id);
+      } else {
+        console.warn("❌ No resumes found for user:", user.id);
       }
       setLoading(false);
     };
