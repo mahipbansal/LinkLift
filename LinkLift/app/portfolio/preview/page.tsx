@@ -95,7 +95,7 @@ export default function PortfolioPreview() {
 
       if (response.ok) {
         alert("Launch Successful! Taking you to your live site...");
-        // 🟢 Redirect to the public dynamic route: stackd.krishnachaturvedi.in/[slug]
+        // 🟢 Redirect to the public dynamic route: linklift.vercel.app/[slug]
         router.push(`/${userSlug}`);
       } else {
         throw new Error("Deploy Hook returned " + response.status);

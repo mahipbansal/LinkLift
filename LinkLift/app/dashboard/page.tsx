@@ -123,10 +123,10 @@ export default function DashboardPage() {
         <div className="flex flex-wrap gap-4">
           {userSlug && (
             <div className="flex items-center gap-2 p-1 bg-white/5 border border-white/10 rounded-full backdrop-blur-md">
-              <span className="pl-4 text-xs text-zinc-500 font-mono">stackd.krishnachaturvedi.in/{userSlug}</span>
+              <span className="pl-4 text-xs text-zinc-500 font-mono">linklift.vercel.app/{userSlug}</span>
               <button
                 onClick={() => {
-                  navigator.clipboard.writeText(`https://stackd.krishnachaturvedi.in/${userSlug}`);
+                  navigator.clipboard.writeText(`https://linklift.vercel.app/${userSlug}`);
                   alert("Link copied to clipboard!");
                 }}
                 className="p-2 bg-indigo-600 rounded-full text-white hover:bg-indigo-500 transition-colors"

@@ -52,7 +52,7 @@ export default function UploadPage() {
     const filePath = `${user.id}/${Date.now()}-${file.name}`;
 
     try {
-      // 1. Upload to Supabase Storage
+      console.log("Step 1: Uploading to Supabase Storage...");
       const { error: storageError } = await supabase.storage
         .from("resumes")
         .upload(filePath, file, {
@@ -60,7 +60,11 @@ export default function UploadPage() {
           upsert: false,
         });
 
-      if (storageError) throw storageError;
+      if (storageError) {
+        console.error("❌ Storage Error:", storageError);
+        throw storageError;
+      }
+      console.log("✅ Storage Upload Success");
 
       const { data: urlData } = supabase.storage
         .from("resumes")
@@ -71,6 +75,7 @@ export default function UploadPage() {
       // 🟢 Create a temporary slug so the initial insert succeeds
       const tempSlug = `user-${Math.floor(100000 + Math.random() * 900000)}`;
 
+      console.log("Step 2: Inserting into DB...");
       const { data: insertedResume, error: dbError } = await supabase
         .from("resumes")
         .insert({
@@ -83,7 +88,11 @@ export default function UploadPage() {
         .select("id")
         .single();
 
-      if (dbError) throw dbError;
+      if (dbError) {
+        console.error("❌ DB Insert Error:", dbError);
+        throw dbError;
+      }
+      console.log("✅ DB Insert Success");
 
       const resumeId = insertedResume?.id;
       if (!resumeId) throw new Error("Failed to get resume ID");
@@ -95,6 +104,7 @@ export default function UploadPage() {
       setIsAnalyzing(true);
 
       // 2. Call the analyze API
+      console.log("Step 3: Calling Analyze API...");
       const analyzeResponse = await fetch("/api/analyze-resume", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -130,11 +140,14 @@ export default function UploadPage() {
       // 3. Final Redirect to the dashboard
       router.push("/dashboard");
 
-    } catch (error) {
-      console.error(error);
+    } catch (error: any) {
+      console.error("Full Error Object:", error);
+      console.error("Error Message:", error.message);
+      console.error("Error Details:", error.details);
+      console.error("Error Hint:", error.hint);
       setMessage({
         type: "error",
-        text: error instanceof Error ? error.message : "Upload failed. Please try again.",
+        text: error.message || "Upload failed. Please check the console for details.",
       });
     } finally {
       setIsUploading(false);

@@ -14,7 +14,11 @@ import { GoogleGenerativeAI, HarmCategory, HarmBlockThreshold } from "@google/ge
 export async function POST(req: NextRequest) {
   try {
     // 0. Environment Check
-    if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.GEMINI_API_KEY) {
+    const hasSupabase = !!process.env.NEXT_PUBLIC_SUPABASE_URL;
+    const hasGemini = !!process.env.GEMINI_API_KEY;
+    console.log(`[API] Checking Environment: Supabase URL: ${hasSupabase}, Gemini Key: ${hasGemini}`);
+
+    if (!hasSupabase || !hasGemini) {
       console.error("❌ Missing Environment Variables");
       throw new Error("Server configuration error: Missing Environment Variables");
     }
