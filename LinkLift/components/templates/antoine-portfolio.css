@@ -1,0 +1,74 @@
+@import url('https://fonts.googleapis.com/css2?family=Baskervville:ital@0;1&family=Space+Mono:ital,wght@0,400;0,700;1,400;1,700&display=swap');
+
+:root {
+    --antoine-primary: #F40C3F;
+    --antoine-secondary: #160000;
+    --font-serif: 'Baskervville', serif;
+    --font-mono: 'Space Mono', monospace;
+}
+
+.antoine-theme {
+    background-color: var(--antoine-primary);
+    color: var(--antoine-secondary);
+    font-family: var(--font-serif);
+}
+
+.antoine-theme.dark {
+    background-color: var(--antoine-secondary);
+    color: var(--antoine-primary);
+}
+
+.antoine-title {
+    font-size: clamp(3rem, 15vw, 12rem);
+    font-weight: 700;
+    line-height: 0.8;
+    text-transform: uppercase;
+    letter-spacing: -0.05em;
+}
+
+.antoine-header {
+    border-bottom: 1px solid currentColor;
+}
+
+.antoine-link {
+    position: relative;
+    overflow: hidden;
+    display: inline-block;
+}
+
+.antoine-link::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 1px;
+    background-color: currentColor;
+    transform: translateX(-101%);
+    transition: transform 0.3s ease;
+}
+
+.antoine-link:hover::after {
+    transform: translateX(0);
+}
+
+/* Character animation classes */
+.char-move-top {
+    animation: char-top 0.5s ease-in-out forwards;
+}
+
+@keyframes char-top {
+    to {
+        transform: translateY(-100%);
+    }
+}
+
+.char-move-bottom {
+    animation: char-bottom 0.5s ease-in-out forwards;
+}
+
+@keyframes char-bottom {
+    to {
+        transform: translateY(100%);
+    }
+}
