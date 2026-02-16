@@ -25,7 +25,7 @@ export function Navbar() {
           <Link href="/" className="hover:opacity-80 transition-opacity">
             <Image
               src="/logo.png"
-              alt="stackd"
+              alt="LinkLift"
               width={100}
               height={32}
               className="h-8 w-auto invert"

@@ -68,7 +68,7 @@ export default async function PublicPortfolio({ params }: { params: Promise<{ sl
         <div className="flex items-center gap-2">
           <Image
             src="/logo.png"
-            alt="stackd"
+            alt="LinkLift"
             width={80}
             height={24}
             className="h-6 w-auto invert opacity-80"

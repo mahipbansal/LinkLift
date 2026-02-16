@@ -4,9 +4,9 @@ import "./globals.css";
 import { Navbar } from "@/components/Navbar";
 
 export const metadata: Metadata = {
-  title: "stackd - Your Tech Stack, Perfectly Stacked",
+  title: "Lift You Link by LinkLift",
   description:
-    "Smarter, Faster, with AI. Build your professional tech identity and generate a stunning portfolio in minutes.",
+    "Smarter, Faster, with AI. Build your professional tech identity and generate a stunning portfolio in minutes with LinkLift.",
 };
 
 export default function RootLayout({
