@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, Suspense } from "react";
 import { createClient } from "@supabase/supabase-js";
 import { useUser } from "@clerk/nextjs";
 import Link from "next/link";
@@ -27,7 +27,7 @@ const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
 );
 
-export default function PortfolioPreview() {
+function PortfolioPreviewContent() {
   const { user } = useUser();
   const router = useRouter(); // 🟢 Initialize router
   const [data, setData] = useState<any>(null);
@@ -339,5 +339,13 @@ export default function PortfolioPreview() {
         )}
       </AnimatePresence>
     </div>
+  );
+}
+
+export default function PortfolioPreview() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-black flex items-center justify-center"><Loader2 className="animate-spin text-indigo-500" size={48} /></div>}>
+      <PortfolioPreviewContent />
+    </Suspense>
   );
 }

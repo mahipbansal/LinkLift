@@ -9,10 +9,16 @@ export interface Template {
     component: React.ComponentType<{ data: ResumeData }>;
 }
 
+import CyberNeonPortfolio from "@/components/templates/CyberNeonPortfolio";
+import GalacticVoyagerPortfolio from "@/components/templates/GalacticVoyagerPortfolio";
+import ZenMinimalistPortfolio from "@/components/templates/ZenMinimalistPortfolio"; // Zen imports
+
+// Restore original imports
 import TerminalPortfolio from "@/components/templates/TerminalPortfolio";
 import ThreeDPortfolio from "@/components/templates/ThreeDPortfolio";
 import SeraPortfolio from "@/components/templates/SeraPortfolio";
 import AntoinePortfolio from "@/components/templates/AntoinePortfolio";
+
 export const TEMPLATES: Record<string, Template> = {
     "default": {
         id: "default",
@@ -32,6 +38,24 @@ export const TEMPLATES: Record<string, Template> = {
         component: ThreeDPortfolio,
         thumbnail: "https://images.unsplash.com/photo-1633356122544-f134324a6cee?w=800&q=80",
     },
+    "cyber": {
+        id: "cyber",
+        name: "Cyber Neon",
+        component: CyberNeonPortfolio,
+        thumbnail: "https://images.unsplash.com/photo-1555680202-c86f0e12f086?w=800&q=80",
+    },
+    "galactic": {
+        id: "galactic",
+        name: "Galactic Voyager",
+        component: GalacticVoyagerPortfolio,
+        thumbnail: "https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=800&q=80",
+    },
+    "zen": {
+        id: "zen",
+        name: "Zen Minimalist",
+        component: ZenMinimalistPortfolio,
+        thumbnail: "https://images.unsplash.com/photo-1494438639946-1ebd1d20bf85?w=800&q=80",
+    },
     sera: {
         id: "sera",
         name: "Sera Universe",
@@ -44,7 +68,6 @@ export const TEMPLATES: Record<string, Template> = {
         component: AntoinePortfolio,
         thumbnail: "https://images.unsplash.com/photo-1550684848-fac1c5b4e853?w=800&q=80",
     },
-
 };
 
 export const DEFAULT_TEMPLATE_ID = "default";
