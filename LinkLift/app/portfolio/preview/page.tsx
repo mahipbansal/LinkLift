@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { createClient } from "@supabase/supabase-js";
 import { useUser } from "@clerk/nextjs";
 import Link from "next/link";
-import { useRouter } from "next/navigation"; // 🟢 Added for redirecting to public link
+import { useRouter, useSearchParams } from "next/navigation"; // 🟢 Added for redirecting to public link
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Download,
@@ -16,7 +16,9 @@ import {
   Loader2,
   X,
   ArrowRight,
-  Layout
+  Layout,
+  CreditCard,
+  Lock
 } from "lucide-react";
 import { TEMPLATES } from "@/lib/templates";
 
@@ -39,6 +41,16 @@ export default function PortfolioPreview() {
   const [isSaving, setIsSaving] = useState(false);
   const [customizeOpen, setCustomizeOpen] = useState(false);
   const [overrides, setOverrides] = useState<any>({});
+  const [isPaid, setIsPaid] = useState(false);
+  const searchParams = useSearchParams();
+
+  useEffect(() => {
+    if (searchParams.get("success")) {
+      alert("Payment Successful! You can now deploy your portfolio.");
+      // Optional: Clean URL
+      window.history.replaceState(null, "", "/portfolio/preview");
+    }
+  }, [searchParams]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -46,18 +58,19 @@ export default function PortfolioPreview() {
       // 🟢 Updated query to include 'slug' column
       const { data: resumes } = await supabase
         .from("resumes")
-        .select("id, parsed_json, file_url, slug, template_id")
+        .select("id, parsed_json, file_url, slug, template_id, is_paid")
         .eq("user_id", user.id)
         .order("created_at", { ascending: false })
         .limit(1);
 
-        if (resumes && resumes.length > 0) {
+      if (resumes && resumes.length > 0) {
         console.log("✅ Portfolio Data Found:", resumes[0]);
         setData(resumes[0].parsed_json);
         setFileUrl(resumes[0].file_url);
         setResumeId(resumes[0].id);
         setUserSlug(resumes[0].slug); // 🟢 Store slug locally
         if (resumes[0].template_id) setCurrentTemplateId(resumes[0].template_id);
+        setIsPaid(resumes[0].is_paid || false);
       } else {
         console.warn("❌ No resumes found for user:", user.id);
       }
@@ -73,7 +86,7 @@ export default function PortfolioPreview() {
     if (!resumeId) return false;
     setIsSaving(true);
     const updatedData = { ...data, ...overrides };
-    
+
     // Optimistic Update
     const { error } = await supabase
       .from("resumes")
@@ -119,8 +132,8 @@ export default function PortfolioPreview() {
       // We will just warn if it's missing but verify the slug works.
 
       if (VERCEL_HOOK_URL) {
-          // Trigger build but don't wait for it continuously
-          fetch(VERCEL_HOOK_URL, { method: "POST" }).catch(e => console.error("Deploy hook error:", e));
+        // Trigger build but don't wait for it continuously
+        fetch(VERCEL_HOOK_URL, { method: "POST" }).catch(e => console.error("Deploy hook error:", e));
       }
 
       // Simulate a short delay so the user feels like "something happened"
@@ -131,12 +144,75 @@ export default function PortfolioPreview() {
       // 🟢 Redirect to the public dynamic route: linklift.vercel.app/[slug]
       // Use window.open to open in new tab so they don't lose the editor
       window.open(`/${userSlug}`, '_blank');
-      setIsDeploying(false); 
-      
+      setIsDeploying(false);
+
     } catch (err) {
       console.error(err);
       alert("Deployment failed.");
       setIsDeploying(false);
+    }
+  };
+
+  const handlePayment = async () => {
+    if (!resumeId) return;
+    try {
+      const res = await fetch("/api/checkout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ resumeId: resumeId })
+      });
+      const data = await res.json();
+      
+      if (!data.orderId) {
+        alert("Failed to create order. Please try again.");
+        return;
+      }
+
+      // Load Razorpay Script
+      const loadScript = (src: string) => {
+        return new Promise((resolve) => {
+          const script = document.createElement("script");
+          script.src = src;
+          script.onload = () => resolve(true);
+          script.onerror = () => resolve(false);
+          document.body.appendChild(script);
+        });
+      };
+
+      const resLoaded = await loadScript("https://checkout.razorpay.com/v1/checkout.js");
+      if (!resLoaded) {
+        alert("Razorpay SDK failed to load. Are you online?");
+        return;
+      }
+
+      const options = {
+        key: data.key,
+        amount: data.amount,
+        currency: data.currency,
+        name: "LinkLift Portfolio",
+        description: "Portfolio Deployment",
+        order_id: data.orderId,
+        handler: function (response: any) {
+             // Verify payment on success (Client side optimistic, verified by webhook)
+             alert("Payment Successful! Deployment Unlocked.");
+             setIsPaid(true);
+        },
+        prefill: {
+            name: data.name || "User",
+            email: data.email || "user@example.com",
+            contact: ""
+        },
+        theme: {
+            color: "#6366f1"
+        }
+      };
+
+      const paymentObject = new (window as any).Razorpay(options);
+      paymentObject.open();
+
+    } catch (err) {
+      console.error(err);
+      alert("Payment Error");
     }
   };
 
@@ -166,14 +242,24 @@ export default function PortfolioPreview() {
           Edit Content
         </button>
 
-        <button
-          onClick={handleDeploy}
-          disabled={isDeploying}
-          className="px-6 py-2.5 bg-indigo-600 rounded-full text-white text-xs font-black uppercase tracking-widest hover:bg-indigo-500 transition-all flex items-center gap-2 shadow-[0_0_30px_-5px_rgba(99,102,241,0.5)] active:scale-95"
-        >
-          {isDeploying ? <Loader2 size={14} className="animate-spin" /> : <Rocket size={14} />}
-          {isDeploying ? "Launching..." : "Deploy Live"}
-        </button>
+        {isPaid ? (
+          <button
+            onClick={handleDeploy}
+            disabled={isDeploying}
+            className="px-6 py-2.5 bg-indigo-600 rounded-full text-white text-xs font-black uppercase tracking-widest hover:bg-indigo-500 transition-all flex items-center gap-2 shadow-[0_0_30px_-5px_rgba(99,102,241,0.5)] active:scale-95"
+          >
+            {isDeploying ? <Loader2 size={14} className="animate-spin" /> : <Rocket size={14} />}
+            {isDeploying ? "Launching..." : "Deploy Live"}
+          </button>
+        ) : (
+          <button
+            onClick={handlePayment}
+            className="px-6 py-2.5 bg-gradient-to-r from-amber-500 to-orange-600 rounded-full text-white text-xs font-black uppercase tracking-widest hover:from-amber-400 hover:to-orange-500 transition-all flex items-center gap-2 shadow-[0_0_30px_-5px_rgba(245,158,11,0.5)] active:scale-95"
+          >
+            <Lock size={14} />
+            Unlock Portfolio (₹100)
+          </button>
+        )}
       </nav>
 
       {/* The Actual Template */}
