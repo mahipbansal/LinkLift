@@ -54,7 +54,7 @@ export default function Home() {
           className="text-5xl md:text-7xl font-bold tracking-tight mb-8 bg-gradient-to-b from-white to-gray-500 bg-clip-text text-transparent max-w-4xl leading-tight"
           variants={itemVariants}
         >
-          <span className="text-white">Lift You Link by LinkLift</span>
+          <span className="text-white">Lift Your Link by LinkLift</span>
         </motion.h1>
 
         <motion.p
