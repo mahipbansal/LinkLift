@@ -4,7 +4,7 @@ import "./globals.css";
 import { Navbar } from "@/components/Navbar";
 
 export const metadata: Metadata = {
-  title: "Lift You Link by LinkLift",
+  title: "Lift Your Link by LinkLift",
   description:
     "Smarter, Faster, with AI. Build your professional tech identity and generate a stunning portfolio in minutes with LinkLift.",
 };
