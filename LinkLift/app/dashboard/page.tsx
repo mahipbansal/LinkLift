@@ -29,8 +29,13 @@ type ParsedResume = {
   name?: string;
   role?: string;
   email?: string;
+  bio?: string;
   score?: number;
   skills?: string[];
+  education?: any[];
+  experience?: any[];
+  projects?: any[];
+  cover_letter?: string;
   suggestions?: Array<{ area: string; issue: string; advice: string }>;
 };
 
