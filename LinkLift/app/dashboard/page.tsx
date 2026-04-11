@@ -117,6 +117,7 @@ export default function DashboardPage() {
         </Link>
         <button 
           onClick={async () => {
+             if (!user) return;
              // Logic to create a blank resume record
              const { data, error } = await supabase.from('resumes').insert({
                user_id: user.id,
