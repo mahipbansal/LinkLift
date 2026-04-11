@@ -37,6 +37,7 @@ type ParsedResume = {
 type ResumeRecord = {
   id: string;
   user_id: string;
+  file_path: string;
   parsed_json: ParsedResume | null;
   slug: string | null;
   created_at: string;
