@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Save, Sparkles, Loader2, Plus, Trash2, Edit3, Download, File, FileCode, GraduationCap, Briefcase, Code, Award, Medal, User, Link as LinkIcon, Rocket, Settings2, LayoutTemplate, Layers, ChevronUp, ChevronDown, CheckCircle2 } from "lucide-react";
+import { X, Save, Sparkles, Loader2, Plus, Trash2, Edit3, Download, File, FileCode, GraduationCap, Briefcase, Code, Award, Medal, User, Link as LinkIcon, Rocket, Settings2, LayoutTemplate, Layers, ChevronUp, ChevronDown, CheckCircle2, Building2, Building2, ExternalLink } from "lucide-react";
 import { ResumeData, Education, Experience, Project } from "@/lib/types";
 
 interface ResumeEditorProps {
@@ -259,6 +259,7 @@ export default function ResumeEditor({ resumeId, initialData, onClose }: ResumeE
     { id: "experience", icon: Briefcase, label: "Experience" },
     { id: "projects", icon: Rocket, label: "Projects" },
     { id: "extras", icon: Award, label: "Other" },
+    { id: "companies", icon: Building2, label: "Companies" },
   ];
 
   return (
@@ -427,6 +428,86 @@ export default function ResumeEditor({ resumeId, initialData, onClose }: ResumeE
                                     <textarea value={proj.description} placeholder="What did you build?" onChange={e => {const newProj = [...data.projects]; newProj[i].description = e.target.value; setData({...data, projects: newProj});}} className="w-full bg-black/20 rounded-2xl p-6 outline-none text-sm text-zinc-300 min-h-[100px] resize-none focus:ring-1 focus:ring-indigo-500/30"/>
                                 </div>
                             ))}
+                        </div>
+                    )}
+
+                    {/* COMPANIES TAB */}
+                    {activeTab === 'companies' && !showArchitect && (
+                        <div className="flex-1 flex flex-col bg-black/20 p-8 custom-scrollbar relative overflow-hidden rounded-[40px]">
+                            <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-indigo-600/5 rounded-full blur-[120px] -mr-64 -mt-64" />
+                            
+                            <div className="relative z-10">
+                                <div className="flex justify-between items-end mb-10 px-2">
+                                    <div>
+                                        <h2 className="text-3xl font-black text-white uppercase tracking-tighter">Hiring Targets</h2>
+                                        <p className="text-xs text-zinc-500 font-bold uppercase tracking-[4px] mt-2 italic">Matched to your Expertise DNA</p>
+                                    </div>
+                                    <div className="flex gap-4">
+                                        <div className="px-5 py-3 bg-white/5 border border-white/10 rounded-2xl flex flex-col">
+                                            <span className="text-[10px] font-black text-zinc-500 uppercase tracking-widest">Match Score</span>
+                                            <span className="text-xl font-black text-indigo-400">92%</span>
+                                        </div>
+                                        <div className="px-5 py-3 bg-white/5 border border-white/10 rounded-2xl flex flex-col">
+                                            <span className="text-[10px] font-black text-zinc-500 uppercase tracking-widest">Active Leads</span>
+                                            <span className="text-xl font-black text-emerald-400">14</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className="grid gap-4">
+                                    {[
+                                        { name: "Vercel", role: "Frontend Engineer (Next.js)", score: 98, salary: "$140k - 180k", type: "Remote" },
+                                        { name: "Linear", role: "Senior Frontend Pro", score: 94, salary: "$160k - 200k", type: "Remote" },
+                                        { name: "Supabase", role: "DX Engineer", score: 89, salary: "$130k - 170k", type: "Hybrid" },
+                                        { name: "Stripe", role: "Product Engineer", score: 86, salary: "$170k - 220k", type: "San Francisco" },
+                                    ].map((job, idx) => (
+                                        <motion.div 
+                                            key={idx}
+                                            initial={{ opacity: 0, x: -20 }}
+                                            animate={{ opacity: 1, x: 0 }}
+                                            transition={{ delay: idx * 0.1 }}
+                                            className="p-6 bg-white/5 border border-white/10 rounded-3XL flex items-center justify-between group hover:bg-white/10 transition-all cursor-pointer shadow-sm relative overflow-hidden"
+                                        >
+                                            <div className="absolute top-0 left-0 w-1 h-full bg-indigo-500/50 opacity-0 group-hover:opacity-100 transition-all" />
+                                            <div className="flex items-center gap-6">
+                                                <div className="w-14 h-14 bg-black/40 rounded-2xl flex items-center justify-center font-black text-xs text-white border border-white/10 group-hover:border-indigo-500/30 transition-all">
+                                                    {job.name.substring(0,2).toUpperCase()}
+                                                </div>
+                                                <div>
+                                                    <h4 className="text-lg font-black text-white">{job.name}</h4>
+                                                    <div className="flex items-center gap-3 mt-1">
+                                                        <span className="text-[11px] font-bold text-zinc-400">{job.role}</span>
+                                                        <span className="w-1 h-1 bg-zinc-700 rounded-full" />
+                                                        <span className="text-[10px] font-black text-emerald-400/80 uppercase tracking-widest">{job.type}</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div className="flex items-center gap-8">
+                                                <div className="text-right">
+                                                    <div className="text-[10px] font-black text-zinc-500 uppercase tracking-[2px] mb-1">Estimate</div>
+                                                    <div className="text-sm font-black text-white">{job.salary}</div>
+                                                </div>
+                                                <div className="flex flex-col items-center justify-center bg-indigo-500/10 border border-indigo-500/20 px-4 py-2 rounded-2xl min-w-[70px]">
+                                                    <span className="text-[10px] font-black text-indigo-400 uppercase tracking-widest">Match</span>
+                                                    <span className="text-lg font-black text-white">{job.score}%</span>
+                                                </div>
+                                                <button className="px-6 py-3 bg-indigo-600 rounded-2xl text-[10px] font-black uppercase tracking-[2px] hover:bg-indigo-500 text-white transition-all shadow-lg shadow-indigo-600/20 group-hover:scale-105">
+                                                    Auto-Apply
+                                                </button>
+                                            </div>
+                                        </motion.div>
+                                    ))}
+                                </div>
+
+                                <div className="mt-10 p-8 border border-dashed border-white/10 rounded-[32px] bg-white/[0.02] text-center">
+                                    <Sparkles className="mx-auto text-indigo-400 mb-4" size={32} />
+                                    <h5 className="text-sm font-black text-white uppercase tracking-widest mb-2">Automated Pipeline</h5>
+                                    <p className="text-xs text-zinc-500 max-w-sm mx-auto font-bold leading-relaxed px-4">
+                                        Our AI is scanning 50+ job boards to find roles that perfectly align with your experience and salary expectations.
+                                    </p>
+                                </div>
+                            </div>
                         </div>
                     )}
 
