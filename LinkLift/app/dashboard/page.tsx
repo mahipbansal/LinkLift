@@ -13,10 +13,16 @@ import {
   Rocket,
   Plus,
   User,
-  Share2
+  Share2,
+  Edit3,
+  Trash2
 } from "lucide-react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { supabase } from "@/lib/supabase";
+import CoverLetterGenerator from "@/components/CoverLetterGenerator";
+import DocumentLibrary from "@/components/DocumentLibrary";
+import ResumeEditor from "@/components/ResumeEditor";
+import { ResumeData } from "@/lib/types";
 
 // --- TYPES ---
 type ParsedResume = {
@@ -51,8 +57,9 @@ const itemVariants = {
 };
 
 export default function DashboardPage() {
-  const { user, isLoaded: userLoaded } = useUser(); // 🟢 Added isLoaded for better sync
+  const { user, isLoaded: userLoaded } = useUser();
   const [resume, setResume] = useState<ResumeRecord | null>(null);
+  const [isEditing, setIsEditing] = useState(false);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -93,11 +100,43 @@ export default function DashboardPage() {
   const userSlug = resume?.slug;
 
   if (!resume || !resume.parsed_json) return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-[#05050A] gap-6">
-      <h2 className="text-2xl font-bold">No Analysis Found</h2>
-      <Link href="/upload" className="px-8 py-4 bg-indigo-600 rounded-full font-bold hover:bg-indigo-500 transition-all">
-        Upload Resume to Start
-      </Link>
+    <div className="min-h-screen flex flex-col items-center justify-center bg-[#05050A] p-6 text-center">
+      <div className="w-24 h-24 bg-indigo-500/10 rounded-full flex items-center justify-center text-indigo-400 mb-8 border border-indigo-500/20">
+        <Rocket size={40} />
+      </div>
+      <h2 className="text-4xl font-bold mb-4">No Resume Found</h2>
+      <p className="text-zinc-500 max-w-md mb-12 text-lg leading-relaxed">
+        Upload an existing resume for analysis, or build a professional one from scratch with our AI builder.
+      </p>
+      
+      <div className="flex flex-col sm:flex-row gap-6">
+        <Link href="/upload">
+          <button className="px-10 py-5 bg-white text-black rounded-[24px] font-bold hover:scale-105 transition-all shadow-xl">
+            Upload Existing PDF
+          </button>
+        </Link>
+        <button 
+          onClick={async () => {
+             // Logic to create a blank resume record
+             const { data, error } = await supabase.from('resumes').insert({
+               user_id: user.id,
+               file_path: 'manual_creation',
+               parsed_json: {
+                 name: user.fullName || "",
+                 role: "",
+                 bio: "",
+                 skills: [],
+                 experience: [],
+                 projects: []
+               }
+             }).select().single();
+             if (data) window.location.reload();
+          }}
+          className="px-10 py-5 bg-indigo-600 text-white rounded-[24px] font-bold hover:bg-indigo-500 transition-all shadow-xl shadow-indigo-500/20"
+        >
+          Build from Scratch
+        </button>
+      </div>
     </div>
   );
 
@@ -136,6 +175,39 @@ export default function DashboardPage() {
               </button>
             </div>
           )}
+          <button 
+            onClick={async () => {
+              if (window.confirm("CRITICAL: Are you sure you want to permanently delete your resume and ALL career insights? This cannot be undone.")) {
+                try {
+                  const res = await fetch("/api/delete-full-resume", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ resumeId: resume.id }),
+                  });
+                  
+                  if (res.ok) {
+                    window.location.href = "/dashboard"; // Force a full navigation to clear state
+                  } else {
+                    const error = await res.json();
+                    alert(`Deletion failed: ${error.error}`);
+                  }
+                } catch (err) {
+                  alert("Network error occurred during deletion.");
+                }
+              }
+            }}
+            className="flex items-center gap-2 px-6 py-3 bg-red-500/10 border border-red-500/20 rounded-full hover:bg-red-500 hover:text-white transition-all text-sm font-medium text-red-500"
+          >
+            <Trash2 size={18} />
+            Delete Data
+          </button>
+          <button 
+            onClick={() => setIsEditing(true)}
+            className="flex items-center gap-2 px-6 py-3 bg-white/5 border border-white/10 rounded-full hover:bg-white/10 transition-all text-sm font-medium backdrop-blur-md"
+          >
+            <Edit3 size={18} />
+            Edit Info
+          </button>
           <Link href="/upload">
             <button className="flex items-center gap-2 px-6 py-3 bg-white/5 border border-white/10 rounded-full hover:bg-white/10 transition-all text-sm font-medium backdrop-blur-md">
               <Plus size={18} />
@@ -179,15 +251,19 @@ export default function DashboardPage() {
                     </defs>
                   </svg>
                   <div className="absolute inset-0 flex flex-col items-center justify-center">
-                    <span className="text-5xl font-bold">{displayScore}</span>
+                    <span className="text-5xl font-bold">{resume.file_path === 'manual_creation' ? "?" : displayScore}</span>
                     <span className="text-[10px] text-zinc-500 uppercase tracking-widest">Score</span>
                   </div>
                 </div>
                 <div className="flex-1 space-y-4 text-center md:text-left">
-                  <h3 className="text-2xl font-bold">Market Compatibility</h3>
+                  <h3 className="text-2xl font-bold">
+                    {resume.file_path === 'manual_creation' ? "Building Your Profile..." : "Market Compatibility"}
+                  </h3>
                   <p className="text-zinc-400 leading-relaxed text-lg">
-                    Your profile is optimized for <span className="text-white font-semibold">{displayRole}</span>.
-                    Refining the areas identified below can significantly increase your callback rate.
+                    {resume.file_path === 'manual_creation' 
+                      ? "You're building your resume from scratch! Click 'Edit Info' to add your experience. Once you're done, we'll analyze your market score."
+                      : <>Your profile is optimized for <span className="text-white font-semibold">{displayRole}</span>. Refining the areas identified below can significantly increase your callback rate.</>
+                    }
                   </p>
                 </div>
               </motion.section>
@@ -199,7 +275,19 @@ export default function DashboardPage() {
                 </div>
 
                 <div className="space-y-10">
-                  {parsed.suggestions && parsed.suggestions.length > 0 ? (
+                  {resume.file_path === 'manual_creation' ? (
+                     <div className="p-8 bg-indigo-500/5 border border-indigo-500/10 rounded-3xl space-y-4">
+                        <div className="flex items-center gap-3 text-indigo-400">
+                           <Sparkles size={20} />
+                           <h4 className="font-bold">Ready to stand out?</h4>
+                        </div>
+                        <p className="text-zinc-400 text-sm leading-relaxed">
+                           Since you're building your resume from scratch, our AI is waiting for more details! 
+                           Use the <strong>Edit Info</strong> button at the top to add your professional journey. 
+                           Don't forget to use the <strong>AI Improvement</strong> tools inside the editor for perfect phrasing!
+                        </p>
+                     </div>
+                  ) : parsed.suggestions && parsed.suggestions.length > 0 ? (
                     parsed.suggestions.map((s, i) => (
                       <div key={i} className="group relative border-l border-white/10 pl-8 py-2 hover:border-indigo-500 transition-colors">
                         <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-500 mb-2 block">{s.area}</span>
@@ -219,6 +307,14 @@ export default function DashboardPage() {
                     <p className="text-zinc-600">No career feedback available. Upload or re-analyze to see AI suggestions.</p>
                   )}
                 </div>
+              </motion.section>
+
+              <motion.section variants={itemVariants} className="pt-12 border-t border-white/5">
+                <CoverLetterGenerator />
+              </motion.section>
+
+              <motion.section variants={itemVariants}>
+                <DocumentLibrary coverLetter={parsed.cover_letter} />
               </motion.section>
             </div>
 
@@ -240,6 +336,17 @@ export default function DashboardPage() {
           </div>
         </div>
       </motion.div>
+
+      {/* --- RESUME EDITOR MODAL --- */}
+      <AnimatePresence>
+        {isEditing && resume && resume.parsed_json && (
+          <ResumeEditor 
+            resumeId={resume.id} 
+            initialData={resume.parsed_json as any} 
+            onClose={() => setIsEditing(false)} 
+          />
+        )}
+      </AnimatePresence>
     </div>
   );
 }

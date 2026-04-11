@@ -76,6 +76,7 @@ export default function TerminalPortfolio({ data }: { data: ResumeData }) {
                     </div>
                 </section>
 
+
                 {/* PROJECTS */}
                 <section className="space-y-24">
                     <div className="flex flex-col gap-6">

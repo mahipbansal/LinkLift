@@ -51,9 +51,24 @@ export async function POST(req: NextRequest) {
         name: { type: "string" },
         role: { type: "string" },
         email: { type: "string" },
+        contact: { type: "string" },
+        linkedin: { type: "string" },
+        github: { type: "string" },
         bio: { type: "string" },
         skills: { type: "array", items: { type: "string" } },
         score: { type: "number" },
+        education: {
+          type: "array",
+          items: {
+            type: "object",
+            properties: {
+              institution: { type: "string" },
+              degree: { type: "string" },
+              timeline: { type: "string" },
+              percentage: { type: "string" }
+            }
+          }
+        },
         experience: {
           type: "array",
           items: {
@@ -80,6 +95,8 @@ export async function POST(req: NextRequest) {
             required: ["title", "description"]
           }
         },
+        certifications: { type: "array", items: { type: "string" } },
+        achievements: { type: "array", items: { type: "string" } },
         suggestions: {
           type: "array",
           items: {
@@ -93,17 +110,17 @@ export async function POST(req: NextRequest) {
           }
         }
       },
-      required: ["name", "role", "skills", "experience", "projects", "score", "suggestions"]
+      required: ["name", "role", "skills", "experience", "projects", "score", "suggestions", "education"]
     };
 
     let parsedData: any = null;
 
     // 2. Model Loop
-    // 🟢 DIVERSE MODELS & API VERSIONS TO BEAT 404/429
+    // 🟢 DIVERSE MODELS & API VERSIONS (Updated for Gemini 2.0/2.5 availability)
     const configsToTry = [
-      { name: "gemini-1.5-flash", version: "v1beta", useSchema: true, jsonMode: true },
-      { name: "gemini-1.5-pro", version: "v1beta", useSchema: true, jsonMode: true },
-      { name: "gemini-1.0-pro", version: "v1", useSchema: false, jsonMode: false }
+      { name: "gemini-2.0-flash", version: "v1beta", useSchema: true, jsonMode: true },
+      { name: "gemini-flash-latest", version: "v1beta", useSchema: true, jsonMode: true },
+      { name: "gemini-pro-latest", version: "v1beta", useSchema: true, jsonMode: true }
     ];
 
     // 🟢 FEW-SHOT PROMPT CONSTRUCTION
@@ -172,12 +189,20 @@ export async function POST(req: NextRequest) {
             "name": "...",
             "role": "...",
             "email": "...",
+            "contact": "...",
+            "linkedin": "...",
+            "github": "...",
             "bio": "...",
-            "github": "...", // Extract if found
-            "linkedin": "...", // Extract if found
             "skills": ["..."],
+            "education": [
+               {"institution": "...", "degree": "10th", "timeline": "...", "percentage": "..."},
+               {"institution": "...", "degree": "12th", "timeline": "...", "percentage": "..."},
+               {"institution": "...", "degree": "...", "timeline": "...", "percentage": "..."}
+            ],
             "experience": [{"role": "...", "company": "...", "duration": "...", "description": "..."}],
             "projects": [{"title": "...", "description": "...", "technologies": ["..."], "link": "..."}],
+            "certifications": ["..."],
+            "achievements": ["..."],
             "score": 85,
             "suggestions": [{"area": "...", "issue": "...", "advice": "..."}]
           }

@@ -1,3 +1,9 @@
+export interface Education {
+    institution: string;
+    degree: string;
+    timeline: string;
+    percentage?: string;
+}
 
 export interface Experience {
     role: string;
@@ -17,12 +23,23 @@ export interface ResumeData {
     name: string;
     role: string;
     email: string;
-    bio: string;
-    github?: string;
+    contact?: string;
     linkedin?: string;
+    github?: string;
+    bio: string;
     skills: string[];
+    education: Education[];
     experience: Experience[];
     projects: Project[];
+    certifications?: string[];
+    achievements?: string[];
+    customSections?: { id: string; title: string; content: string }[];
+    layoutConfig?: {
+        order: string[];
+        side: Record<string, 'left' | 'right' | 'full'>;
+        titles: Record<string, string>;
+    };
     score?: number;
     suggestions?: any[];
+    cover_letter?: string;
 }
