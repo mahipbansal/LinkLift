@@ -13,9 +13,12 @@ export async function POST(req: Request) {
         success: true,
         source: "mock",
         jobs: [
-          { name: "Vercel", role: query || "Frontend Engineer", score: 98, salary: "$140k - 180k", type: location || "Remote", source: "LinkedIn", cat: "Tier 1" },
-          { name: "PostHog", role: query || "Fullstack Wizard", score: 96, salary: "$130k - 170k", type: location || "Remote", source: "YC", cat: "Startup" },
-          { name: "Railway", role: query || "Infra Engineer", score: 87, salary: "$120k - 160k", type: location || "Remote", source: "YC", cat: "Startup" },
+          { name: "Vercel", role: query || "Frontend Engineer", score: 98, salary: "$140k - 180k", type: location || "Remote", source: "LinkedIn", cat: "Tier 1", posted: "1h ago", status: "New" },
+          { name: "PostHog", role: query || "Fullstack Wizard", score: 96, salary: "$130k - 170k", type: location || "Remote", source: "YC", cat: "Startup", posted: "3h ago", status: "New" },
+          { name: "Railway", role: query || "Infra Engineer", score: 87, salary: "$120k - 160k", type: location || "Remote", source: "YC", cat: "Startup", posted: "5h ago", status: "Ongoing" },
+          { name: "Linear", role: query || "Product Designer", score: 92, salary: "$150k - 190k", type: location || "Remote", source: "LinkedIn", cat: "Growth", posted: "12h ago", status: "Ongoing" },
+          { name: "Discord", role: query || "Backend Developer", score: 85, salary: "$160k - 200k", type: location || "Remote", source: "Indeed", cat: "Tier 1", posted: "1d ago", status: "Ongoing" },
+          { name: "Stripe", role: query || "Payments Engineer", score: 94, salary: "$170k - 220k", type: location || "Remote", source: "LinkedIn", cat: "Tier 1", posted: "2d ago", status: "Ongoing" }
         ]
       });
     }

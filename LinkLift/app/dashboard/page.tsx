@@ -203,11 +203,12 @@ export default function DashboardPage() {
     }
   }, [user?.id, userLoaded]);
 
-  // Auto-scout when switching to companies view
+  // Auto-scout when switching to companies view (once per session/resume load)
   useEffect(() => {
     if (activeView === 'companies' && jobs.length === 0 && !scouting) {
         handleScout(scoutLocation || "Remote");
     }
+  }, [activeView, jobs.length, scouting, resume]);
   }, [activeView]);
 
   if (loading || !userLoaded) return (
@@ -437,16 +438,33 @@ export default function DashboardPage() {
               <div className="relative z-10">
                 <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-indigo-600/[0.03] rounded-full blur-[150px] -mr-80 -mt-80" />
                 
-                <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-16 px-4 gap-8">
-                  <div className="flex flex-col md:flex-row items-center gap-4">
-                    <h2 className="text-5xl font-black text-white uppercase tracking-tighter">Hiring Targets</h2>
-                    <div className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-[3px] border transition-all ${
-                        isLive ? 'bg-indigo-500/10 border-indigo-500/20 text-indigo-400' : 'bg-zinc-500/10 border-white/5 text-zinc-600'
-                    }`}>
-                        {isLive ? "● Live Scout" : "○ Simulated"}
+                <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-16 px-4 gap-8">
+                  <div className="flex flex-col md:flex-row items-center gap-6">
+                    <h2 className="text-5xl font-black text-white uppercase tracking-tighter italic">Hiring Targets</h2>
+                    <div className="flex items-center bg-white/[0.03] border border-white/10 p-2 rounded-[32px] pl-6 ring-1 ring-white/5 shadow-2xl">
+                      <Globe className="text-indigo-400 mr-4" size={18} />
+                      <input 
+                        type="text" 
+                        className="bg-transparent border-none outline-none text-sm font-bold text-white w-40 placeholder:text-zinc-600 uppercase tracking-widest"
+                        placeholder="LOCATION..."
+                        value={scoutLocation}
+                        onChange={(e) => setScoutLocation(e.target.value)}
+                      />
+                      <button 
+                        onClick={() => handleScout(scoutLocation)}
+                        disabled={scouting}
+                        className="p-4 bg-indigo-600 hover:bg-indigo-500 rounded-full text-white transition-all disabled:opacity-50"
+                      >
+                        {scouting ? <Loader2 size={18} className="animate-spin" /> : <RefreshCw size={18} />}
+                      </button>
                     </div>
                   </div>
-                  <p className="text-xs text-zinc-500 font-black uppercase tracking-[6px] mt-6 italic">Matched to your Expertise DNA</p>
+                  <div className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-[3px] border transition-all ${
+                      isLive ? 'bg-indigo-500/10 border-indigo-500/20 text-indigo-400' : 'bg-zinc-500/10 border-white/5 text-zinc-600'
+                  }`}>
+                      {isLive ? "● Live Scout Active" : "○ Local Database"}
+                  </div>
+                </div>
                   
                   {/* LOCATION SCOUTING BAR */}
                   <div className="w-full md:w-96 relative group">
