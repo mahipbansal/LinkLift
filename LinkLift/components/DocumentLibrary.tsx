@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { FileText, Download, Trash2, ExternalLink, X, File, FileCode } from "lucide-react";
+import { FileText, Download, Trash2, ExternalLink, X, File, FileCode, Loader2 } from "lucide-react";
 
 export default function DocumentLibrary({ coverLetter }: { coverLetter?: string }) {
   const [showFull, setShowFull] = useState(false);
