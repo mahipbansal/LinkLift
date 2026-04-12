@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { useUser } from "@clerk/nextjs";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Save, Sparkles, Loader2, Plus, Trash2, Edit3, Download, File, FileCode, GraduationCap, Briefcase, Code, Award, Medal, User, Link as LinkIcon, Rocket, Settings2, LayoutTemplate, Layers, ChevronUp, ChevronDown, CheckCircle2, Building2, ExternalLink } from "lucide-react";
+import { X, Save, Sparkles, Loader2, Plus, Trash2, Edit3, Download, File, FileCode, GraduationCap, Briefcase, Code, Award, Medal, User, Link as LinkIcon, Rocket, Settings2, LayoutTemplate, Layers, ChevronUp, ChevronDown, CheckCircle2, Building2, ExternalLink, ChevronRight, Globe } from "lucide-react";
 import { ResumeData, Education, Experience, Project } from "@/lib/types";
 
 interface ResumeEditorProps {
